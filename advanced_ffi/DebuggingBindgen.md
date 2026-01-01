@@ -1,7 +1,9 @@
-bindgen is a Rust library that parses C/C++ code and outputs Rust bindings automatically.It generates Rust-compatibledefinitions for C/C++ types and functionsloaded from a single header file. You add bindgen to a Cargo.toml file.
+bindgen is a Rust library that parses C/C++ code and outputs Rust bindings automatically.It generates Rust-compatible definitions for C/C++ types and functions loaded from a single header file. 
+
+Adding bindgen to a Cargo.toml file.
 
 
-    [paeckage]
+    [package]
     name = "ngx_http_calculator_rs"
     varsion = "0.1.0"
     authors = ["xyz<xyz@yy.com>"]
@@ -13,55 +15,58 @@ bindgen is a Rust library that parses C/C++ code and outputs Rust bindings autom
     bindgen = "0.56.0"
 
 
-bindgen sits under the build-dependencies not in a finished binary as a normal dependency, we only need it to included in the dependencies of our build-script.
+bindgen sits under the build-dependencies not in a finished binary as a normal dependency, we only need it to include in the dependencies of our build-script.
 
 bindgen works by parsing a C/C++ header file (and allowing all 'include' directives) for type, variable, & function declarations and outputting Rust code that is compatible with those directives.
 
-bindgen also needs the header file and that file needs to '#include' all the headers that Rust module might need access to.
+bindgen also needs the header file and that file needs to '#include' all the headers that a Rust module might need access to.
 
-We will need  a header file - 'wrapper.h' 
+We will need  a header file -> 'wrapper.h' 
 
     #include <ngx_config.h>
     #include <ngx_core.h>
     #include <ngx_http.h>
 
 
-This is a normal C header file, but instead of being used to compile C code, it will be used to generate Rust code. So, now we will need a 'build.rs' file - its contents reveals how it uses bindgen to create our bindings.
+This is a normal C header file, but instead of being used to compile C code, it will be used to generate Rust code. 
+So, now we will need a 'build.rs' file - its contents reveal how it uses bindgen to create our bindings.
 
 
 
     fn main() {
-  let nginx_dir = "nginx-1.19.3";
 
-  let bindings = bindgen::builder()
-    .header("wrapper.h")
-    .clang_args(vec![
-      format!("-I{}/src/core", nginx_dir),
-      format!("-I{}/src/event", nginx_dir),
-      format!("-I{}/src/event/modules", nginx_dir),
-      format!("-I{}/src/os/unix", nginx_dir),
-      format!("-I{}/objs", nginx_dir),
-      format!("-I{}/src/http", nginx_dir),
-      format!("-I{}/src/http/v2", nginx_dir),
-      format!("-I{}/src/http/modules", nginx_dir),
-    ])
-    .generate()
-    .unwrap();
+        let nginx_dir = "nginx-1.19.3";
 
-  bindings
-    .write_to_file("nginx.rs")
-    .unwrap();  
+        let bindings = bindgen::builder()
+            .header("wrapper.h")
+            .clang_args(vec![
+                format!("-I{}/src/core", nginx_dir),
+                format!("-I{}/src/event", nginx_dir),
+                format!("-I{}/src/event/modules", 
+                        nginx_dir),
+                format!("-I{}/src/os/unix", nginx_dir),
+                format!("-I{}/objs", nginx_dir),
+                format!("-I{}/src/http", nginx_dir),
+                format!("-I{}/src/http/v2", nginx_dir),
+                format!("-I{}/src/http/modules", nginx_di                           r),
+             ])
+            .generate()
+            .unwrap();
+
+   bindings
+            .write_to_file("nginx.rs")
+            .unwrap();  
 
     }
 
     
-MY PERSONAL experience debugging bindgen:
+MY PERSONAL experience while debugging bindgen:
 
-this Rust / C/C++ interface file run through a script to allow Rust and C to communicate sits at the heart of SYSTEM ENGINEERING.
+this Rust / C/C++ interface file is run through a script to allow Rust and C to communicate. It sits at the heart of SYSTEM ENGINEERING, in my humble opinion.
 
-this is my first error I came across when trying to compile the file via the above script from the variety of the 'CLANG_args':
+Below, is an first error I came across when trying to compile the file via the above script that includes a  variety of the 'CLANG_args':
 
-The error:
+The error from my Kali Linux Cli;
 
     Compiling ngx_http_calculator_rs v0.1.0 (/home/mlawumba/Refactor_to_Rust/advanced_ffi) error: failed to run custom build command for ngx_http_calculator_rs v0.1.0 (/home/mlawumba/Refactor_to_Rust/advanced_ffi) Caused by: process didn't exit successfully: /home/mlawumba/Refactor_to_Rust/advanced_ffi/target/debug/build/ngx_http_calculator_rs-60534b844ea0f73a/build-script-build (exit status: 101) 
 
@@ -71,22 +76,29 @@ The error:
     
 
 
-this error, led me to open and read a MAKEFILE of 1200+ code lines, and the offending line was a PATH line at 1207 code line deep. (Thanks to an LLM to discover this)
+this error, led me to open and read a MAKEFILE of 1200+ code lines, and the offending line was a PATH codeline located at code line 1207. 
 
-this to me reveals WHY Rust is a safe system language - if you read the error, you discover one of Rust's key features elated to error handling. this is the 'thread "main" (32937) panicked part' - Rust detects a tread related fatal issue and crashes instead of processing it to protect the memory in the heap and system at large.
+(My software book does say , an overly motivated Developer would look at such lines of code .....I thought I must give it a try- it was so satifying to spot the error after asking an LLM what it would look like)
 
-The error did not come from the Rust code, not Cargo - it comes from bindgen itself as a result of an older version we put into our Cargo.toml file.
+this to me reveals WHY Rust is a safe system language - if you read the error, you discover one of Rust's key safety features related to error handling as a debugging tool (also my API Security backroud helps here, it encourages me to look at errors as data, NOT irritants 
 
-This is the line from the error that reveals the problem:
+This is the 'thread "main" (32937) panicked part'; 
+
+Rust detects a thread related fatal issue and crashes at COMPILE time instead of running the code. This to protects memory vulnerabilities in the heap and systems at large.
+
+The error did not come from the Rust code, not Cargo - it comes from bindgen itself as a result of an older version I put into the Cargo.toml file.
+
+Here is the line from the error that reveals the problem:
 
     "in6_addr_union_(unnamed_at_/usr/include/netinet/in_h_225_5)" is not a valid Ident
 
 
- The root cause is - 
+ The root cause is;
+  
     bindgen v0.56.0
     in our Cargo.toml file.
 
-  Cargo is trying to generate through the ( header build script) Rust identifiers from ANONYMOUS C unions inside:
+Cargo is trying to generate through ( the header build script) - Rust identifiers from ANONYMOUS C unions inside:
 
     usr/include/netinet/in.h
 
@@ -101,6 +113,7 @@ Specifically:
 Bindgen is trying to invent a Rust name like:
 
     in6_addr_union_(unnamed_at_/usr/include/netinet/in_h_225_5)
+
 
 This is NOT a valid Rust identifier, Rust panicks (crashes). A key Rust safety feature to protect systems.
 
