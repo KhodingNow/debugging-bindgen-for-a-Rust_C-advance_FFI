@@ -1,0 +1,1 @@
+/home/mlawumba/Refactor_to_Rust/advanced_ffi/target/release/libngx_http_calculator_rs.so: /home/mlawumba/Refactor_to_Rust/advanced_ffi/build.rs /home/mlawumba/Refactor_to_Rust/advanced_ffi/src/lib.rs /home/mlawumba/Refactor_to_Rust/advanced_ffi/target/release/build/ngx_http_calculator_rs-9457cb778e9dd902/out/nginx.rs

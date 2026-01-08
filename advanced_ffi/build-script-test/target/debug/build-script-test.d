@@ -1,0 +1,1 @@
+/home/mlawumba/Refactor_to_Rust/advanced_ffi/build-script-test/target/debug/build-script-test: /home/mlawumba/Refactor_to_Rust/advanced_ffi/build-script-test/build.rs /home/mlawumba/Refactor_to_Rust/advanced_ffi/build-script-test/src/main.rs

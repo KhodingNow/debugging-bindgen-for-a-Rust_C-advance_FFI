@@ -1,0 +1,12 @@
+
+[package]
+name = "ngx_http_calculator_rs"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ngx_http_calculator_rs"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+bindgen = "0.72.1"

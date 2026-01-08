@@ -1,0 +1,8 @@
+2026/01/03 08:41:47 [emerg] 196539#0: open() "ngx-run/mime.types" failed (2: No such file or directory) in ngx-run/nginx.conf:18
+2026/01/03 08:50:27 [emerg] 200764#0: open() "ngx-run/mime.types" failed (2: No such file or directory) in ngx-run/nginx.conf:18
+2026/01/03 09:00:33 [emerg] 205734#0: bind() to 0.0.0.0:80 failed (98: Unknown error)
+2026/01/03 09:00:33 [emerg] 205734#0: bind() to 0.0.0.0:80 failed (98: Unknown error)
+2026/01/03 09:00:33 [emerg] 205734#0: bind() to 0.0.0.0:80 failed (98: Unknown error)
+2026/01/03 09:00:33 [emerg] 205734#0: bind() to 0.0.0.0:80 failed (98: Unknown error)
+2026/01/03 09:00:33 [emerg] 205734#0: bind() to 0.0.0.0:80 failed (98: Unknown error)
+2026/01/03 09:00:33 [emerg] 205734#0: still could not bind()
